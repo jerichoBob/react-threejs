@@ -1,101 +1,77 @@
 import * as THREE from 'three'
 import { useState, useRef } from 'react'
 import { Canvas, extend, useFrame } from '@react-three/fiber'
-import { useGLTF, Clone, OrbitControls, AccumulativeShadows, RandomizedLight, Text, Effects, Environment, Center, ContactShadows } from '@react-three/drei'
+import {  OrbitControls, AccumulativeShadows, RandomizedLight, Center, Environment, ContactShadows } from '@react-three/drei'
+
+const ball_size = 0.25;
+const rad = ball_size * 3;
+
+const sph_x = (r, theta, phi) => r * Math.cos(phi) * Math.sin(theta);
+const sph_y = (r, theta, phi) => r * Math.sin(phi) * Math.sin(theta);
+const sph_z = (r, theta, phi) => r * Math.cos(theta);
 
 const Model = (props) => {
-    const ball_size = 0.25;
-    const rad = ball_size * 4;
-    const x1 = rad * Math.cos(0);
-    const z1 = rad * Math.sin(0);
+    const theta_top = Math.PI/2-Math.acos(1/Math.sqrt(3));
+    const theta_bot = Math.PI/2-Math.acos(1/Math.sqrt(3))+Math.PI;
     return (
-        <group position={[0, -1, -2]}>
-            <Sphere scale={ball_size} position={[0, 0, 0]} color="#000000" />
+        <group position={props.position}>
+            <Sphere scale={ball_size} radius={0}   theta={Math.PI/2} phi={Math.PI*0/3} color="#000000" />
+            <Sphere scale={ball_size} radius={rad} theta={Math.PI/2} phi={Math.PI*0/3} color="#ff0000" />
 
-            <Sphere scale={ball_size} position={[rad * Math.cos(Math.PI*0/3), 0, rad * Math.sin(Math.PI*0/3)]} color="#ff0000" />
-            <Sphere scale={ball_size} position={[rad * Math.cos(Math.PI*1/3), 0, rad * Math.sin(Math.PI*1/3)]} color="#770000" />
-            <Sphere scale={ball_size} position={[rad * Math.cos(Math.PI*2/3), 0, rad * Math.sin(Math.PI*2/3)]} color="#333300" />
-            <Sphere scale={ball_size} position={[rad * Math.cos(Math.PI*3/3), 0, rad * Math.sin(Math.PI*3/3)]} color="#337700" />
-            <Sphere scale={ball_size} position={[rad * Math.cos(Math.PI*4/3), 0, rad * Math.sin(Math.PI*4/3)]} color="#33ff00" />
-            <Sphere scale={ball_size} position={[rad * Math.cos(Math.PI*5/3), 0, rad * Math.sin(Math.PI*5/3)]} color="#777700" />
+            <Sphere scale={ball_size} radius={rad} theta={Math.PI/2} phi={Math.PI*1/3} color="#770000" />
+            <Sphere scale={ball_size} radius={rad} theta={Math.PI/2} phi={Math.PI*2/3} color="#333300" />
+            <Sphere scale={ball_size} radius={rad} theta={Math.PI/2} phi={Math.PI*3/3} color="#337700" />
+            <Sphere scale={ball_size} radius={rad} theta={Math.PI/2} phi={Math.PI*4/3} color="#33ff00" />
+            <Sphere scale={ball_size} radius={rad} theta={Math.PI/2} phi={Math.PI*5/3} color="#777700" />
 
-            <Sphere scale={ball_size} position={[rad * Math.cos(Math.PI*0/3), 4, rad * Math.sin(Math.PI*0/3)]} color="#000077" />
+            <Sphere scale={ball_size} radius={rad} theta={theta_top} phi={Math.PI*1/6} color="#0000aa" />
+            <Sphere scale={ball_size} radius={rad} theta={theta_top} phi={Math.PI*5/6} color="#0000aa" />
+            <Sphere scale={ball_size} radius={rad} theta={theta_top} phi={Math.PI*9/6} color="#0000aa" />
 
-            <AccumulativeShadows temporal frames={100} alphaTest={0.8} scale={12}>
-            <RandomizedLight amount={8} radius={4} ambient={0.5} intensity={1} position={[2.5, 5, -10]} />
-            </AccumulativeShadows>
-            {/* <ContactShadows frames={1} scale={5} position={[0, -1, 0]} far={1} blur={5} opacity={0.5} color="#204080" /> */}
+            <Sphere scale={ball_size} radius={rad} theta={theta_bot} phi={Math.PI*1/6} color="#00aaaa" />
+            <Sphere scale={ball_size} radius={rad} theta={theta_bot} phi={Math.PI*5/6} color="#00aaaa" />
+            <Sphere scale={ball_size} radius={rad} theta={theta_bot} phi={Math.PI*9/6} color="#00aaaa" />
+
         </group>
     )
+}
 
+
+function Sphere(props) {
+    const pos=[
+        sph_x(props.radius, props.theta, props.phi), 
+        sph_y(props.radius, props.theta, props.phi), 
+        sph_z(props.radius, props.theta, props.phi) ];
+    return (
+        <Center top scale={props.scale} position={pos}>
+            <mesh castShadow receiveShadow>
+                <sphereGeometry args={[1, 64, 64]} />
+                <meshStandardMaterial color={props.color}/>
+            </mesh>
+        </Center>
+  )
 }
 
 export default function App() {
+    return (
+        <Canvas camera={{ position: [0, 1, 4], fov: 50 }}>
+        {/* <Canvas shadows camera={{ position: [0, 1, 0] }}> */}
+        <ambientLight intensity={1} />
+        <spotLight position={[10, 10, 10]} angle={0.5} penumbra={1} castShadow />
+        <pointLight position={[-10, 0, -10]} intensity={2} />
+        <Model position={[0, 0, 0]} />
+        {/* <Environment preset="city" /> */}
+        {/* <ContactShadows frames={1} scale={5} position={[0, 0, 0]} far={1} blur={5} opacity={0.5} color="#204080" /> */}
+        {/* <ContactShadows frames={1} position={[0, 0, 0]} scale={10} blur={1} opacity={0.75} /> */}
+        <ContactShadows frames={1} scale={5} position={[0, -1, 0]} far={1} blur={5} opacity={0.5} color="#204080" />
 
-  return (
-    // eventPrefix="client" to get client instead of offset coordinates
-    // offset would reset xy to 0 when hovering the html overlay
-    <Canvas eventPrefix="client" shadows camera={{ position: [1, 0.5, -1] }}>
-      {/* <color attach="background" args={['#f0f0f']} /> */}
-      <ambientLight intensity={1} />
-      {/* <spotLight position={[10, 10, 10]} angle={0.5} penumbra={1} castShadow />
-      <pointLight position={[-10, 0, -10]} intensity={2} /> */}
-      <Model position={[0, 10, 0]} />
-      {/* <Environment preset="city" /> */}
-      <ContactShadows frames={1} scale={5} position={[0, -1, 0]} far={1} blur={5} opacity={0.5} color="#204080" />
+        {/* <AccumulativeShadows temporal frames={100} alphaTest={0.8} scale={12}>
+            <RandomizedLight amount={8} radius={4} ambient={0.5} intensity={1} position={[2.5, 5, -10]} />
+        </AccumulativeShadows> */}
+        <OrbitControls />
+        {/* <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2.1} /> */}
 
-      {/* <Postpro /> */}
-      <Rig />
-      <OrbitControls />
-
-    </Canvas>
-  )
-}
-
-function Postpro() {
-  const ref = useRef()
-  useFrame((state) => (ref.current.time = state.clock.elapsedTime * 3))
-  return (
-    <Effects>
-      <waterPass ref={ref} factor={0.5} />
-      <glitchPass />
-    </Effects>
-  )
-}
-
-function Rig({ vec = new THREE.Vector3() }) {
-  useFrame((state) => {
-    state.camera.position.lerp(vec.set(1 + state.pointer.x, 0.5, 3), 0.01)
-    state.camera.lookAt(0, 0, 0)
-  })
-}
-
-function Sphere(props) {
-  return (
-    <Center top {...props}>
-      <mesh castShadow receiveShadow>
-        <sphereGeometry args={[1, 64, 64]} />
-        <meshStandardMaterial color={props.color}/>
-      </mesh>
-    </Center>
-  )
-}
-
-function Input(props) {
-  const [text, set] = useState('hello world ...')
-  return (
-    <group {...props}>
-      <Text position={[-1.2, -0.022, 0]} anchorX="0px" font="/Inter-Regular.woff" fontSize={0.335} letterSpacing={-0.0}>
-        {text}
-        <meshStandardMaterial color="black" />
-      </Text>
-      <mesh position={[0, -0.022, 0]} scale={[2.5, 0.48, 1]}>
-        <planeGeometry />
-        <meshBasicMaterial transparent opacity={0.3} depthWrite={false} />
-      </mesh>
-      {/* <Html transform>
-        <ControlledInput type={text} onChange={(e) => set(e.target.value)} value={text} />
-      </Html> */}
-    </group>
-  )
-}
+      </Canvas>
+    )
+  }
+  
