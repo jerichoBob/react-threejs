@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const App = () => {
+const App2 = () => {
 
   const mountRef = useRef(null);
 
@@ -16,31 +16,21 @@ const App = () => {
     const currentRef = mountRef.current;
     currentRef.appendChild( renderer.domElement );
 
-    // const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    const geometry = new THREE.IcosahedronGeometry( 1, 0 );
+    const geometry = new THREE.IcosahedronGeometry( 1, 4 );
 
-    const material = new THREE.MeshBasicMaterial( { color: 0x0000ffaa } );
-    const cube = new THREE.Mesh( geometry, material );    
-    scene.add( cube );
+    // const material = new THREE.MeshBasicMaterial( { color: 0x0000ffaa } );
+    const material = new THREE.MeshNormalMaterial();
 
-    const edges = new THREE.EdgesGeometry( geometry );
-    const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
-    scene.add( line );    
+    const sphere = new THREE.Mesh( geometry, material );    
+    scene.add( sphere );
+
+    // const edges = new THREE.EdgesGeometry( geometry );
+    // const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
+    // scene.add( line );       
 
     camera.position.z = 5;
+    renderer.render( scene, camera );
 
-    const animate = function () {
-      requestAnimationFrame( animate );
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-      cube.rotation.z += 0.01;
-      console.log(`cube.rotation.z: ${cube.rotation.z}`);
-      // cube.material.color
-      line.rotation.x += 0.01;
-      line.rotation.y += 0.01;
-      line.rotation.z += 0.01;
-      renderer.render( scene, camera );
-    }
 
     let onWindowResize = function () {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -50,7 +40,6 @@ const App = () => {
 
     window.addEventListener("resize", onWindowResize, false);
 
-    animate();
 
     return () => currentRef.removeChild( renderer.domElement);
   }, []);
@@ -62,4 +51,4 @@ const App = () => {
   );
 }
 
-export default App;
+export default App2;
