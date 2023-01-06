@@ -68,7 +68,7 @@ export default function App() {
         {/* <AccumulativeShadows temporal frames={100} alphaTest={0.8} scale={12}>
             <RandomizedLight amount={8} radius={4} ambient={0.5} intensity={1} position={[2.5, 5, -10]} />
         </AccumulativeShadows> */}
-        <OrbitControls />
+        <OrbitControls autoRotate autoRotateSpeed={1}/>
         {/* <OrbitControls minPolarAngle={0} maxPolarAngle={Math.PI / 2.1} /> */}
 
       </Canvas>
