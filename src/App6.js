@@ -66,7 +66,7 @@ const Point = (layer, size, pos, r, theta, phi) => {
     const x = decimalTrunc(pos[0]+sph_x(r, theta, phi), decimal_pts);
     const y = decimalTrunc(pos[1]+sph_y(r, theta, phi), decimal_pts);
     const z = decimalTrunc(pos[2]+sph_z(r, theta, phi), decimal_pts); 
-
+    // const distance = Math.sqrt(x**2 + y**2 + z**2)
     // console.log(`x: ${x} y:${y} z:${z}`);
     // console.log("Points.length: ", Points.length);
     const found = Points.find((point) => {
@@ -78,6 +78,8 @@ const Point = (layer, size, pos, r, theta, phi) => {
         )});
     // console.log("found: ", found);
     if (!found) {
+
+        // console.log(`distance: ${distance}`)
         Points.push({
             layer: layer,
             size: size, 
